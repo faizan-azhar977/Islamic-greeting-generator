@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Islamic Greeting Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@400;700;900&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #D4A843;
+    --gold-light: #F2D78B;
+    --gold-dark: #8B6914;
+    --emerald: #0B6E4F;
+    --emerald-light: #1AA679;
+    --emerald-dark: #064033;
+    --navy: #0D1B3E;
+    --navy-light: #1A2F6B;
+    --navy-mid: #152350;
+    --cream: #FDF6E3;
+    --cream-dark: #F5E8C0;
+    --text-light: #FAF3E0;
+    --text-muted: #B8A98A;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: #050D20;
+    color: var(--text-light);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Stars background ── */
+  .stars-bg {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background: radial-gradient(ellipse at 20% 20%, #0D1B3E 0%, #050D20 70%);
+  }
+  .star {
+    position: absolute; border-radius: 50%;
+    background: white; animation: twinkle var(--d,3s) ease-in-out infinite var(--delay,0s);
+  }
+  @keyframes twinkle {
+    0%,100% { opacity:0.2; transform:scale(1); }
+    50% { opacity:1; transform:scale(1.4); }
+  }
+
+  /* ── Page structure ── */
+  .page { position: relative; z-index: 1; }
+  .hidden { display: none !important; }
+
+  /* ── HERO / Landing ── */
+  #page-home {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 40px 24px;
+    text-align: center;
+  }
+  .crescent-top {
+    width: 120px; height: 60px;
+    position: relative; margin-bottom: 32px; animation: float 4s ease-in-out infinite;
+  }
+  @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-12px);} }
+  .crescent-svg { filter: drop-shadow(0 0 18px #D4A843aa); }
+
+  .bismillah {
+    font-family: 'Amiri', serif; font-size: clamp(22px,5vw,36px);
+    color: var(--gold); letter-spacing: 4px; margin-bottom: 12px;
+    text-shadow: 0 0 30px #D4A84366;
+    animation: fadeDown .8s ease both;
+  }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px,7vw,58px); font-weight: 900;
+    line-height: 1.1; margin-bottom: 16px;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold), #A07820);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    animation: fadeDown .9s ease .1s both;
+  }
+  .hero-sub {
+    font-size: clamp(13px,3vw,17px); color: var(--text-muted);
+    max-width: 480px; line-height: 1.7;
+    animation: fadeDown .9s ease .2s both; margin-bottom: 44px;
+  }
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-20px);} to{opacity:1;transform:translateY(0);} }
+
+  /* ── Form card ── */
+  .form-card {
+    background: linear-gradient(145deg, rgba(13,27,62,0.95), rgba(6,64,51,0.7));
+    border: 1px solid rgba(212,168,67,0.3);
+    border-radius: 24px; padding: 40px;
+    width: 100%; max-width: 520px;
+    box-shadow: 0 0 60px rgba(212,168,67,0.08), 0 20px 60px rgba(0,0,0,0.5);
+    animation: fadeUp .9s ease .3s both;
+  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(30px);} to{opacity:1;transform:translateY(0);} }
+
+  .form-label {
+    display: block; font-size: 13px; font-weight: 500;
+    color: var(--gold-light); letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 8px; margin-top: 20px;
+  }
+  .form-label:first-of-type { margin-top: 0; }
+  .form-input {
+    width: 100%; padding: 14px 18px;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(212,168,67,0.25);
+    border-radius: 12px; color: var(--text-light);
+    font-family: 'Poppins', sans-serif; font-size: 15px;
+    transition: border-color .25s, box-shadow .25s; outline: none;
+  }
+  .form-input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(212,168,67,0.15);
+  }
+  .form-input::placeholder { color: rgba(184,169,138,0.5); }
+  select.form-input option { background: #0D1B3E; color: white; }
+
+  /* Events grid */
+  .events-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(110px,1fr));
+    gap: 10px; margin-top: 12px;
+  }
+  .event-btn {
+    padding: 12px 8px; border-radius: 12px;
+    border: 1px solid rgba(212,168,67,0.2);
+    background: rgba(255,255,255,0.04);
+    color: var(--text-muted); font-size: 12px;
+    font-family: 'Poppins', sans-serif; cursor: pointer;
+    transition: all .2s; text-align: center; line-height: 1.3;
+  }
+  .event-btn:hover { border-color: var(--gold); color: var(--gold-light); background: rgba(212,168,67,0.08); }
+  .event-btn.active {
+    border-color: var(--gold); background: rgba(212,168,67,0.15);
+    color: var(--gold-light); box-shadow: 0 0 12px rgba(212,168,67,0.2);
+  }
+  .event-icon { font-size: 20px; margin-bottom: 4px; display: block; }
+
+  /* Language toggle */
+  .lang-toggle {
+    display: flex; gap: 8px; margin-top: 12px;
+  }
+  .lang-btn {
+    flex: 1; padding: 10px; border-radius: 10px;
+    border: 1px solid rgba(212,168,67,0.2);
+    background: rgba(255,255,255,0.04);
+    color: var(--text-muted); font-size: 13px;
+    font-family: 'Poppins', sans-serif; cursor: pointer;
+    transition: all .2s;
+  }
+  .lang-btn.active { border-color: var(--gold); background: rgba(212,168,67,0.15); color: var(--gold-light); }
+
+  /* Theme selector */
+  .theme-grid { display: flex; gap: 10px; margin-top: 10px; }
+  .theme-dot {
+    width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+    border: 2px solid transparent; transition: all .2s;
+  }
+  .theme-dot.active { border-color: white; transform: scale(1.2); }
+
+  .generate-btn {
+    width: 100%; margin-top: 28px; padding: 16px;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light));
+    border: none; border-radius: 14px;
+    font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700;
+    color: #2A1800; cursor: pointer;
+    box-shadow: 0 4px 30px rgba(212,168,67,0.4);
+    transition: all .25s; letter-spacing: 0.5px;
+  }
+  .generate-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 40px rgba(212,168,67,0.5); }
+  .generate-btn:active { transform: translateY(0); }
+
+  /* ── CARD PAGE ── */
+  #page-card {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 24px 16px 60px;
+  }
+  .card-actions {
+    display: flex; gap: 12px; margin-bottom: 28px;
+    flex-wrap: wrap; justify-content: center;
+  }
+  .action-btn {
+    padding: 10px 20px; border-radius: 10px;
+    border: 1px solid rgba(212,168,67,0.3);
+    background: rgba(13,27,62,0.8);
+    color: var(--text-light); font-size: 13px; font-weight: 500;
+    font-family: 'Poppins', sans-serif; cursor: pointer;
+    transition: all .2s; display: flex; align-items: center; gap: 8px;
+  }
+  .action-btn:hover { border-color: var(--gold); background: rgba(212,168,67,0.1); }
+  .action-btn.primary {
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    color: #2A1800; border-color: transparent;
+  }
+  .action-btn.primary:hover { box-shadow: 0 4px 20px rgba(212,168,67,0.4); }\n  .action-btn:disabled { opacity: .65; cursor: wait; transform: none !important; }\n  .download-note { max-width: 680px; margin: -14px 0 24px; text-align: center; color: rgba(255,255,255,.45); font-size: 11px; line-height: 1.6; }
+
+  /* The Greeting Card */
+  .greeting-card {
+    width: 100%; max-width: 680px;
+    border-radius: 28px; overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(212,168,67,0.2), 0 40px 80px rgba(0,0,0,0.7);
+    position: relative;
+  }
+  .card-inner {
+    position: relative; min-height: 520px;
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: space-between; padding: 48px 40px;
+    overflow: hidden;
+  }
+
+  /* Theme backgrounds */
+  .theme-gold .card-inner { background: linear-gradient(160deg, #1A0D00 0%, #2D1A00 40%, #0D1B0D 100%); }
+  .theme-emerald .card-inner { background: linear-gradient(160deg, #011A10 0%, #032E1A 40%, #0A1A2E 100%); }
+  .theme-navy .card-inner { background: linear-gradient(160deg, #05102A 0%, #0D1B3E 40%, #1A0D2E 100%); }
+  .theme-rose .card-inner { background: linear-gradient(160deg, #1A0510 0%, #2E0D1A 40%, #1A0D00 100%); }
+  .theme-midnight .card-inner { background: linear-gradient(160deg, #050520 0%, #0D0D2E 40%, #1A0520 100%); }
+
+  .card-geo {
+    position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+  }
+  .card-top-line {
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .theme-gold .card-top-line { background: linear-gradient(90deg, transparent, #D4A843, transparent); }
+  .theme-emerald .card-top-line { background: linear-gradient(90deg, transparent, #1AA679, transparent); }
+  .theme-navy .card-top-line { background: linear-gradient(90deg, transparent, #4A7BD4, transparent); }
+  .theme-rose .card-top-line { background: linear-gradient(90deg, transparent, #D44A7B, transparent); }
+  .theme-midnight .card-top-line { background: linear-gradient(90deg, transparent, #7B4AD4, transparent); }
+
+  /* Card content */
+  .card-bismillah {
+    font-family: 'Amiri', serif;
+    font-size: clamp(20px,5vw,30px);
+    color: var(--gold); letter-spacing: 6px;
+    text-shadow: 0 0 20px currentColor;
+    text-align: center; position: relative; z-index: 1;
+  }
+  .theme-emerald .card-bismillah { color: #5DCAA5; }
+  .theme-navy .card-bismillah { color: #85B7EB; }
+  .theme-rose .card-bismillah { color: #ED93B1; }
+  .theme-midnight .card-bismillah { color: #B093ED; }
+
+  .card-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 0; position: relative; z-index: 1; text-align: center; }
+  .card-event-name {
+    font-family: 'Amiri', serif;
+    font-size: clamp(36px,9vw,72px); font-weight: 700;
+    line-height: 1.1; margin-bottom: 8px;
+    text-shadow: 0 0 40px currentColor;
+  }
+  .theme-gold .card-event-name { color: var(--gold-light); }
+  .theme-emerald .card-event-name { color: #9FE1CB; }
+  .theme-navy .card-event-name { color: #B5D4F4; }
+  .theme-rose .card-event-name { color: #F4C0D1; }
+  .theme-midnight .card-event-name { color: #C0B5F4; }
+
+  .card-event-arabic {
+    font-family: 'Amiri', serif;
+    font-size: clamp(18px,4vw,28px); direction: rtl;
+    opacity: 0.7; margin-bottom: 24px;
+  }
+  .card-from {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(14px,3vw,20px); letter-spacing: 2px;
+    color: rgba(255,255,255,0.6); margin-bottom: 4px;
+  }
+  .card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px,5vw,38px); font-weight: 700;
+    color: white; letter-spacing: 1px;
+    text-shadow: 0 2px 20px rgba(255,255,255,0.2);
+  }
+  .card-dua {
+    font-family: 'Amiri', serif;
+    font-size: clamp(13px,2.5vw,16px);
+    color: rgba(255,255,255,0.5); margin-top: 20px;
+    max-width: 400px; line-height: 1.8; text-align: center;
+  }
+
+  .card-footer {
+    position: relative; z-index: 1; text-align: center;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 20px; width: 100%;
+  }
+  .card-footer-text {
+    font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+  }
+
+  /* Decorative mosque SVG at bottom of card */
+  .card-mosque {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    opacity: 0.08; pointer-events: none;
+  }
+
+  /* ── Urdu mode ── */
+  .urdu-mode .card-event-name { font-size: clamp(30px,7vw,60px); }
+
+  /* ── Sharing toast ── */
+  .toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: rgba(13,27,62,0.95); border: 1px solid var(--gold);
+    border-radius: 12px; padding: 14px 24px;
+    color: var(--gold-light); font-size: 14px;
+    transition: transform .3s; z-index: 999;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── Nav ── */
+  .top-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 24px;
+    background: rgba(5,13,32,0.85); backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(212,168,67,0.1);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif; font-size: 18px;
+    color: var(--gold); letter-spacing: 1px;
+  }
+  .nav-links { display: flex; gap: 16px; }
+  .nav-link {
+    font-size: 13px; color: var(--text-muted);
+    cursor: pointer; transition: color .2s;
+    background: none; border: none; font-family: 'Poppins', sans-serif;
+  }
+  .nav-link:hover { color: var(--gold-light); }
+  .nav-link.active { color: var(--gold); }
+
+  /* Animated lanterns */
+  .lantern { position: absolute; animation: swing 3s ease-in-out infinite; transform-origin: top center; }
+  @keyframes swing { 0%,100%{transform:rotate(-8deg);} 50%{transform:rotate(8deg);} }
+  .lantern-1 { top: 60px; left: 40px; animation-delay: 0s; }
+  .lantern-2 { top: 80px; right: 60px; animation-delay: 1s; }
+  .lantern-3 { top: 40px; left: 50%; animation-delay: 0.5s; }
+
+  /* ── Responsive ── */
+  @media (max-width:600px) {
+    .form-card { padding: 28px 20px; }
+    .card-inner { padding: 36px 24px; }
+    .events-grid { grid-template-columns: repeat(3,1fr); }
+  }
+
+  /* Shimmer on card load */
+  @keyframes shimmer {
+    0%{opacity:0;transform:scale(.95);}
+    100%{opacity:1;transform:scale(1);}
+  }
+  .greeting-card { animation: shimmer .6s ease; }
+
+  /* Star particle */
+  .sparks { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+  .spark {
+    position: absolute; width: 2px; height: 2px; border-radius: 50%;
+    background: white; animation: sparkle var(--d,4s) linear infinite var(--dl,0s);
+    opacity: 0;
+  }
+  @keyframes sparkle {
+    0%{opacity:0;transform:translateY(0) scale(0);}
+    10%{opacity:.8;}
+    90%{opacity:.2;}
+    100%{opacity:0;transform:translateY(-60px) scale(1.5);}
+  }
+
+  /* Nav spacer */
+  .nav-spacer { height: 65px; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+<!-- Stars -->
+<div class="stars-bg" id="stars"></div>
+
+<!-- Nav -->
+<nav class="top-nav">
+  <div class="nav-logo">☪ IslamicGreetings</div>
+  <div class="nav-links">
+    <button class="nav-link active" onclick="showPage('home')">Create</button>
+    <button class="nav-link" onclick="showPage('about')">About</button>
+    <button class="nav-link" id="nav-card-link" style="display:none" onclick="showPage('card')">My Card</button>
+  </div>
+</nav>
+
+<!-- Toast -->
+<div class="toast" id="toast">✓ Link copied to clipboard!</div>
+
+<!-- ══════════ HOME PAGE ══════════ -->
+<div id="page-home" class="page">
+  <div class="nav-spacer"></div>
+
+  <!-- Crescent -->
+  <div class="crescent-top">
+    <svg class="crescent-svg" viewBox="0 0 120 70" width="120">
+      <path d="M60 5 A50 50 0 1 1 10 50 A35 35 0 1 0 60 5Z" fill="#D4A843"/>
+      <circle cx="82" cy="18" r="4" fill="#F2D78B" opacity=".8"/>
+      <circle cx="95" cy="30" r="3" fill="#F2D78B" opacity=".6"/>
+      <circle cx="88" cy="45" r="2" fill="#F2D78B" opacity=".4"/>
+    </svg>
+  </div>
+
+  <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+  <h1 class="hero-title">Islamic Greeting<br>Card Generator</h1>
+  <p class="hero-sub">Create beautiful, personalized Islamic greeting cards for every blessed occasion — crafted with love and devotion.</p>
+
+  <!-- Form -->
+  <div class="form-card">
+    <label class="form-label">Your Name</label>
+    <input class="form-input" id="inp-name" type="text" placeholder="e.g. Faizan Azhar" />
+
+    <label class="form-label">Choose Occasion</label>
+    <div class="events-grid" id="events-grid"></div>
+
+    <label class="form-label">Language</label>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="lang-en" onclick="setLang('en')">🇬🇧 English</button>
+      <button class="lang-btn" id="lang-ur" onclick="setLang('ur')">🇵🇰 اردو</button>
+      <button class="lang-btn" id="lang-ar" onclick="setLang('ar')">🇸🇦 عربی</button>
+    </div>
+
+    <label class="form-label">Color Theme</label>
+    <div class="theme-grid" id="theme-grid"></div>
+
+    <button class="generate-btn" onclick="generateCard()">✦ Generate My Greeting ✦</button>
+  </div>
+</div>
+
+<!-- ══════════ CARD PAGE ══════════ -->
+<div id="page-card" class="page hidden">
+  <div class="nav-spacer"></div>
+
+  <div class="card-actions">
+    <button class="action-btn" onclick="showPage('home')">← Create Another</button>
+    <button class="action-btn" onclick="shareCard()">🔗 Share Link</button>
+    <button class="action-btn" onclick="copyCard()">📋 Copy Text</button>
+    <button class="action-btn primary" onclick="downloadCard()" id="download-btn">⬇ Download HD PNG</button>
+  </div>
+  <div class="download-note">HD PNG • 4× resolution • lossless export • designed to preserve the card’s colours, gradients, Arabic/Urdu text, and details</div>
+
+  <div class="greeting-card" id="greeting-card">
+    <div class="card-inner" id="card-inner">
+      <div class="card-geo" id="card-geo"></div>
+      <div class="lantern lantern-1" id="lantern1"></div>
+      <div class="lantern lantern-2" id="lantern2"></div>
+      <div class="lantern lantern-3" id="lantern3"></div>
+      <div class="sparks" id="sparks"></div>
+
+      <div class="card-top-line"></div>
+      <div class="card-bismillah" id="card-bismillah">بِسْمِ اللهِ الرَّحمنِ الرَّحِيمِ</div>
+
+      <div class="card-center">
+        <div class="card-event-name" id="card-event-name">Eid Mubarak</div>
+        <div class="card-event-arabic" id="card-event-arabic">عيد مبارك</div>
+        <div class="card-from" id="card-from">with love from</div>
+        <div class="card-name" id="card-name">Your Name</div>
+        <div class="card-dua" id="card-dua"></div>
+      </div>
+
+      <!-- Mosque silhouette -->
+      <svg class="card-mosque" viewBox="0 0 680 200" preserveAspectRatio="none">
+        <path d="M0 200 L0 140 Q20 100 40 140 L40 120 Q50 80 60 120 L60 110 Q70 60 80 110 L80 120 Q90 80 100 120 L100 140 Q120 100 140 140 L140 200Z" fill="white" opacity=".5"/>
+        <path d="M200 200 L200 130 Q230 70 260 130 L260 200Z" fill="white"/>
+        <path d="M225 130 Q230 90 235 130Z" fill="white"/>
+        <path d="M255 200 L255 150 Q260 130 265 150 L265 200Z" fill="white"/>
+        <path d="M300 200 L300 160 Q310 140 320 160 L320 200Z" fill="white"/>
+        <path d="M400 200 L400 130 Q430 70 460 130 L460 200Z" fill="white"/>
+        <path d="M425 130 Q430 90 435 130Z" fill="white"/>
+        <path d="M455 200 L455 150 Q460 130 465 150 L465 200Z" fill="white"/>
+        <path d="M500 200 L500 140 Q520 100 540 140 L540 200Z" fill="white"/>
+        <rect x="0" y="190" width="680" height="10" fill="white"/>
+      </svg>
+
+      <div class="card-footer">
+        <div class="card-footer-text" id="card-footer-text">May Allah bless you and your family • آمین</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Event details panel -->
+  <div style="max-width:680px;width:100%;margin-top:36px;padding:0 8px;">
+    <div id="event-details-panel" style="background:rgba(13,27,62,0.8);border:1px solid rgba(212,168,67,0.2);border-radius:20px;padding:28px;">
+      <h3 style="font-family:'Playfair Display',serif;color:var(--gold-light);font-size:20px;margin-bottom:16px;" id="detail-title">About This Occasion</h3>
+      <p style="color:var(--text-muted);line-height:1.8;font-size:14px;" id="detail-desc"></p>
+      <div style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.08);">
+        <div style="font-size:12px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:10px;">Dua / Supplication</div>
+        <div id="detail-dua" style="font-family:'Amiri',serif;font-size:18px;color:var(--gold);direction:rtl;text-align:right;line-height:2;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ ABOUT PAGE ══════════ -->
+<div id="page-about" class="page hidden" style="min-height:100vh;padding:90px 24px 60px;max-width:700px;margin:0 auto;">
+  <h2 style="font-family:'Playfair Display',serif;font-size:36px;color:var(--gold);margin-bottom:16px;">About This App</h2>
+  <p style="color:var(--text-muted);line-height:1.9;margin-bottom:20px;">IslamicGreetings is a free, open-hearted platform to share the beauty of Islamic occasions with your loved ones. Generate personalized greeting cards for Eid, Ramadan, Jummah, and more — in English, Urdu, or Arabic.</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;margin-top:32px;">
+    <div style="background:rgba(13,27,62,0.8);border:1px solid rgba(212,168,67,0.2);border-radius:16px;padding:24px;text-align:center;">
+      <div style="font-size:32px;margin-bottom:12px;">🕌</div>
+      <div style="font-weight:500;margin-bottom:6px;">8 Occasions</div>
+      <div style="font-size:13px;color:var(--text-muted);">From Eid to Jummah</div>
+    </div>
+    <div style="background:rgba(13,27,62,0.8);border:1px solid rgba(212,168,67,0.2);border-radius:16px;padding:24px;text-align:center;">
+      <div style="font-size:32px;margin-bottom:12px;">🌙</div>
+      <div style="font-weight:500;margin-bottom:6px;">3 Languages</div>
+      <div style="font-size:13px;color:var(--text-muted);">English, Urdu, Arabic</div>
+    </div>
+    <div style="background:rgba(13,27,62,0.8);border:1px solid rgba(212,168,67,0.2);border-radius:16px;padding:24px;text-align:center;">
+      <div style="font-size:32px;margin-bottom:12px;">🎨</div>
+      <div style="font-weight:500;margin-bottom:6px;">5 Themes</div>
+      <div style="font-size:13px;color:var(--text-muted);">Gold, Emerald, Navy &amp; more</div>
+    </div>
+    <div style="background:rgba(13,27,62,0.8);border:1px solid rgba(212,168,67,0.2);border-radius:16px;padding:24px;text-align:center;">
+      <div style="font-size:32px;margin-bottom:12px;">📤</div>
+      <div style="font-weight:500;margin-bottom:6px;">Share & Download</div>
+      <div style="font-size:13px;color:var(--text-muted);">Save or share instantly</div>
+    </div>
+  </div>
+  <button class="generate-btn" style="max-width:260px;margin-top:32px;" onclick="showPage('home')">← Back to Create</button>
+</div>
+
+<script>
+// ── Data ──────────────────────────────────────────────────
+const EVENTS = [
+  {
+    id:'eid-fitr', icon:'🌙', en:'Eid ul-Fitr', ur:'عید الفطر', ar:'عيد الفطر',
+    arabic:'عيد الفطر المبارك',
+    dua_ar:'تَقَبَّلَ اللَّهُ مِنَّا وَمِنْكُمْ',
+    dua_en:'Taqabbalallahu minnaa wa minkum',
+    detail:'Eid ul-Fitr is the Festival of Breaking the Fast, celebrated on the first day of Shawwal after the holy month of Ramadan. It is a day of immense joy, gratitude, and togetherness — Muslims around the world pray together, share meals, give Zakat ul-Fitr, and visit family.',
+    from_en:'with warm Eid greetings from', from_ur:'عید مبارک کی طرف سے', from_ar:'بمناسبة عيد الفطر من',
+    event_en:'Eid Mubarak', event_ur:'عید مبارک', event_ar:'عيد الفطر مبارك',
+    dua_detail:'May Allah accept from us and from you. May He fill your day with joy, your home with peace, and your heart with faith.',
+    footer_en:'May Allah accept our fasts and yours • تقبل الله منا ومنكم'
+  },
+  {
+    id:'eid-adha', icon:'🐑', en:'Eid ul-Adha', ur:'عید الاضحی', ar:'عيد الأضحى',
+    arabic:'عيد الأضحى المبارك',
+    dua_ar:'كُلُّ عَامٍ وَأَنْتُمْ بِخَيْرٍ',
+    dua_en:'Kull \'aam wa antum bikhayr',
+    detail:'Eid ul-Adha is the Festival of Sacrifice, commemorating the willingness of Ibrahim (AS) to sacrifice his son as an act of obedience. Muslims perform Qurbani (sacrifice), distribute meat to the poor, and celebrate the completion of Hajj.',
+    from_en:'with heartfelt Eid blessings from', from_ur:'عید الاضحی مبارک از', from_ar:'بمناسبة عيد الأضحى من',
+    event_en:'Eid ul-Adha', event_ur:'عید الاضحی', event_ar:'عيد الأضحى',
+    dua_detail:'May Allah accept your sacrifice and grant you and your family good health, happiness, and countless blessings.',
+    footer_en:'May Allah accept your Qurbani • كل عام وأنتم بخير'
+  },
+  {
+    id:'ramadan', icon:'🌛', en:'Ramadan Kareem', ur:'رمضان کریم', ar:'رمضان كريم',
+    arabic:'رَمَضَانُ كَرِيْم',
+    dua_ar:'رَمَضَانُ كَرِيمُ وَاللَّهُ أَكْرَمُ',
+    dua_en:'Ramadhan kareem, Wallahu akram',
+    detail:'Ramadan is the ninth and holiest month of the Islamic calendar, during which Muslims fast from dawn to sunset. It is a month of intense worship, Quran recitation, self-reflection, and community. Laylat ul-Qadr (Night of Power) falls in the last ten nights.',
+    from_en:'Ramadan blessings from', from_ur:'رمضان مبارک کی طرف سے', from_ar:'بمناسبة شهر رمضان من',
+    event_en:'Ramadan Mubarak', event_ur:'رمضان مبارک', event_ar:'رمضان كريم',
+    dua_detail:'May Allah grant you a blessed Ramadan filled with His mercy, forgiveness, and freedom from the Fire.',
+    footer_en:'Blessed fasting • صِيَام مَقبُول'
+  },
+  {
+    id:'jummah', icon:'🕌', en:'Jummah Mubarak', ur:'جمعہ مبارک', ar:'جمعة مباركة',
+    arabic:'جُمُعَةٌ مُبَارَكَةٌ',
+    dua_ar:'اللَّهُمَّ اجْعَلْ يَوْمَنَا يَوْمَ خَيْرٍ',
+    dua_en:'Allahumma ij\'al yawmana yawma khayrin',
+    detail:'Jummah (Friday) is the most blessed day of the week in Islam. The Prophet ﷺ called it the "Master of Days." Muslims gather for Jumu\'ah prayer, listen to the Khutbah (sermon), and send abundant blessings upon the Prophet ﷺ.',
+    from_en:'Jummah greetings from', from_ur:'جمعہ مبارک از', from_ar:'تهانئ الجمعة من',
+    event_en:'Jummah Mubarak', event_ur:'جمعہ مبارک', event_ar:'جمعة مباركة',
+    dua_detail:'May Allah grant you a blessed Friday full of His mercy and forgiveness. Recite abundant salawat upon the Prophet ﷺ today.',
+    footer_en:'Blessed Friday • يَوْمُ الجُمُعَة'
+  },
+  {
+    id:'shab-e-barat', icon:'✨', en:'Shab-e-Barat', ur:'شب برات', ar:'ليلة البراءة',
+    arabic:'لَيْلَةُ البَرَاءَة',
+    dua_ar:'اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ العَفْوَ فَاعْفُ عَنِّي',
+    dua_en:'Allahumma innaka \'afuwwun tuhibb al-\'afwa fa\'fu \'anni',
+    detail:'Shab-e-Barat (Night of Forgiveness) falls on the 15th of Sha\'ban. Many Muslims believe Allah determines the destinies of all for the coming year on this night, and that He forgives His servants extensively. Muslims spend this night in prayer, Quran recitation, and seeking forgiveness.',
+    from_en:'Shab-e-Barat blessings from', from_ur:'شب برات مبارک از', from_ar:'بمناسبة ليلة البراءة من',
+    event_en:'Shab-e-Barat Mubarak', event_ur:'شب برات مبارک', event_ar:'ليلة البراءة',
+    dua_detail:'O Allah, You are the Most Forgiving and You love to forgive, so forgive me. Grant us Your mercy on this blessed night.',
+    footer_en:'Night of Forgiveness • ليلة المغفرة'
+  },
+  {
+    id:'islamic-new-year', icon:'🗓️', en:'Islamic New Year', ur:'اسلامی نیا سال', ar:'رأس السنة الهجرية',
+    arabic:'رَأسُ السَّنَةِ الهِجرِيَّة',
+    dua_ar:'اللَّهُمَّ أَدْخِلْهُ عَلَيْنَا بِالأَمْنِ وَالإِيمَانِ',
+    dua_en:'Allahumma adkhilhu alayna bil-amni wal-iman',
+    detail:'The Islamic New Year (1 Muharram) marks the beginning of the Hijri calendar, commemorating the Hijra — the Prophet Muhammad\'s ﷺ migration from Makkah to Madinah in 622 CE. It is a time for reflection, renewed intentions, and increased devotion.',
+    from_en:'New Year blessings from', from_ur:'نئے سال کی مبارکباد از', from_ar:'بمناسبة السنة الهجرية الجديدة من',
+    event_en:'Happy Islamic New Year', event_ur:'اسلامی نیا سال مبارک', event_ar:'عام هجري جديد سعيد',
+    dua_detail:'O Allah, bring this year upon us with peace and faith, safety and Islam, and protection from the outcast devil.',
+    footer_en:'Hijri New Year • رَأسُ السَّنَة الهِجرِيَّة'
+  },
+  {
+    id:'prayer', icon:'🤲', en:'Prayer Reminder', ur:'نماز کی یاددہانی', ar:'تذكير بالصلاة',
+    arabic:'الصَّلَاةُ خَيْرٌ مِنَ النَّوْم',
+    dua_ar:'رَبَّنَا تَقَبَّلْ مِنَّا إِنَّكَ أَنتَ السَّمِيعُ العَلِيمُ',
+    dua_en:'Rabbana taqabbal minna innaka anta as-Sami\' al-\'Alim',
+    detail:'Prayer (Salah) is the second pillar of Islam and the most important act of worship after the Shahadah. Muslims pray five times daily: Fajr, Dhuhr, Asr, Maghrib, and Isha. Each prayer is a direct connection between the servant and Allah.',
+    from_en:'prayer reminder from', from_ur:'نماز یاددہانی از', from_ar:'تذكير بالصلاة من',
+    event_en:'Time to Pray', event_ur:'نماز کا وقت', event_ar:'حان وقت الصلاة',
+    dua_detail:'Our Lord, accept from us. Indeed, You are the All-Hearing, the All-Knowing. Make us among those who establish the prayer.',
+    footer_en:'Establish Prayer • أَقِيمُوا الصَّلَاة'
+  },
+  {
+    id:'zakat', icon:'💛', en:'Zakat Reminder', ur:'زکوٰۃ کی یاددہانی', ar:'تذكير بالزكاة',
+    arabic:'الزَّكَاةُ طَهَارَةٌ',
+    dua_ar:'اللَّهُمَّ اجْعَلْ أَمْوَالَنَا زَكِيَّة',
+    dua_en:'Allahumma ij\'al amwaalana zakiyyah',
+    detail:'Zakat is the third pillar of Islam — obligatory charity given by eligible Muslims at 2.5% of their savings held for a lunar year. It purifies wealth, supports the needy, and strengthens the community. It is a right of the poor upon the wealthy.',
+    from_en:'Zakat reminder from', from_ur:'زکوٰۃ یاددہانی از', from_ar:'تذكير بالزكاة من',
+    event_en:'Give Your Zakat', event_ur:'زکوٰۃ ادا کریں', event_ar:'أدِّ زكاتك',
+    dua_detail:'O Allah, make our wealth pure and blessed. Grant us the opportunity and sincerity to give Zakat and charity for Your sake.',
+    footer_en:'Purify your wealth • زَكُّوا أَمْوَالَكُم'
+  }
+];
+
+const THEMES = [
+  { id:'gold', color:'linear-gradient(135deg,#D4A843,#8B6914)', label:'Gold' },
+  { id:'emerald', color:'linear-gradient(135deg,#1AA679,#064033)', label:'Emerald' },
+  { id:'navy', color:'linear-gradient(135deg,#1A2F6B,#0D1B3E)', label:'Navy' },
+  { id:'rose', color:'linear-gradient(135deg,#D44A7B,#6B0D30)', label:'Rose' },
+  { id:'midnight', color:'linear-gradient(135deg,#7B4AD4,#0D052E)', label:'Midnight' },
+];
+
+// ── State ──────────────────────────────────────────────────
+let state = {
+  name: '', event: 'eid-fitr', lang: 'en', theme: 'gold'
+};
+
+// ── Stars ──────────────────────────────────────────────────
+function initStars() {
+  const c = document.getElementById('stars');
+  for(let i=0;i<120;i++){
+    const s = document.createElement('div');
+    s.className='star';
+    const sz = Math.random()*2.5+0.5;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*5}s;--delay:${Math.random()*5}s;opacity:${Math.random()*.6+.1}`;
+    c.appendChild(s);
+  }
+}
+
+// ── Build events grid ──────────────────────────────────────
+function buildEventsGrid() {
+  const g = document.getElementById('events-grid');
+  g.innerHTML = EVENTS.map(e=>`
+    <button class="event-btn${state.event===e.id?' active':''}" onclick="selectEvent('${e.id}')">
+      <span class="event-icon">${e.icon}</span>
+      ${e.en}
+    </button>
+  `).join('');
+}
+
+// ── Build themes ───────────────────────────────────────────
+function buildThemes() {
+  const g = document.getElementById('theme-grid');
+  g.innerHTML = THEMES.map(t=>`
+    <div class="theme-dot${state.theme===t.id?' active':''}" 
+      title="${t.label}"
+      style="background:${t.color}"
+      onclick="selectTheme('${t.id}')"></div>
+  `).join('');
+}
+
+// ── Handlers ───────────────────────────────────────────────
+function selectEvent(id) { state.event=id; buildEventsGrid(); }
+function selectTheme(id) { state.theme=id; buildThemes(); }
+function setLang(l) {
+  state.lang=l;
+  ['en','ur','ar'].forEach(x=>{
+    document.getElementById('lang-'+x).classList.toggle('active',x===l);
+  });
+}
+
+function showPage(name) {
+  ['home','card','about'].forEach(p=>{
+    const el = document.getElementById('page-'+p);
+    el.classList.toggle('hidden', p!==name);
+  });
+  document.querySelectorAll('.nav-link').forEach(l=>{
+    l.classList.remove('active');
+  });
+  window.scrollTo(0,0);
+}
+
+// ── Generate card ──────────────────────────────────────────
+function generateCard() {
+  const nameInp = document.getElementById('inp-name').value.trim();
+  state.name = nameInp || 'You';
+
+  const ev = EVENTS.find(e=>e.id===state.event);
+  const lang = state.lang;
+
+  // Event text
+  const eventName = lang==='en'? ev.event_en : lang==='ur'? ev.event_ur : ev.event_ar;
+  const fromText = lang==='en'? ev.from_en : lang==='ur'? ev.from_ur : ev.from_ar;
+
+  // Build card
+  const inner = document.getElementById('card-inner');
+  inner.className = 'card-inner theme-'+state.theme;
+
+  document.getElementById('card-event-name').textContent = eventName;
+  document.getElementById('card-event-arabic').textContent = ev.arabic;
+  document.getElementById('card-from').textContent = fromText;
+  document.getElementById('card-name').textContent = state.name;
+  document.getElementById('card-dua').textContent = ev.dua_en + ' — ' + ev.dua_ar;
+  document.getElementById('card-footer-text').textContent = ev.footer_en;
+
+  // Urdu RTL
+  const eventEl = document.getElementById('card-event-name');
+  eventEl.style.direction = (lang==='ur'||lang==='ar') ? 'rtl' : 'ltr';
+
+  // Bismillah theming
+  const bsm = document.getElementById('card-bismillah');
+  const colors = {gold:'#D4A843',emerald:'#5DCAA5',navy:'#85B7EB',rose:'#ED93B1',midnight:'#B093ED'};
+  bsm.style.color = colors[state.theme]||'#D4A843';
+
+  // Sparkles
+  buildSparkles();
+  // Lanterns
+  buildLanterns();
+
+  // Event details
+  document.getElementById('detail-title').textContent = 'About ' + ev.en;
+  document.getElementById('detail-desc').textContent = ev.detail;
+  document.getElementById('detail-dua').textContent = ev.dua_ar;
+
+  document.getElementById('nav-card-link').style.display='';
+  showPage('card');
+}
+
+function buildSparkles() {
+  const c = document.getElementById('sparks'); c.innerHTML='';
+  for(let i=0;i<30;i++){
+    const s=document.createElement('div');
+    s.className='spark';
+    s.style.cssText=`left:${Math.random()*100}%;top:${20+Math.random()*60}%;--d:${3+Math.random()*5}s;--dl:${Math.random()*5}s;`;
+    c.appendChild(s);
+  }
+}
+
+function buildLanterns() {
+  const colors = {gold:'#D4A843',emerald:'#1AA679',navy:'#4A7BD4',rose:'#D44A7B',midnight:'#7B4AD4'};
+  const col = colors[state.theme]||'#D4A843';
+  const lSvg = (c,size=36)=>`<svg width="${size}" height="${size*1.6}" viewBox="0 0 36 56">
+    <line x1="18" y1="0" x2="18" y2="8" stroke="${c}" stroke-width="1.5"/>
+    <ellipse cx="18" cy="12" rx="10" ry="4" fill="${c}" opacity=".5"/>
+    <rect x="8" y="12" width="20" height="28" rx="6" fill="${c}" opacity=".7"/>
+    <line x1="8" y1="20" x2="28" y2="20" stroke="rgba(255,255,255,.2)" stroke-width=".5"/>
+    <line x1="8" y1="28" x2="28" y2="28" stroke="rgba(255,255,255,.2)" stroke-width=".5"/>
+    <line x1="8" y1="36" x2="28" y2="36" stroke="rgba(255,255,255,.2)" stroke-width=".5"/>
+    <ellipse cx="18" cy="40" rx="10" ry="4" fill="${c}" opacity=".5"/>
+    <path d="M14 40 L18 52 L22 40Z" fill="${c}" opacity=".5"/>
+  </svg>`;
+  document.getElementById('lantern1').innerHTML=lSvg(col,32);
+  document.getElementById('lantern2').innerHTML=lSvg(col,28);
+  document.getElementById('lantern3').innerHTML=lSvg(col,36);
+}
+
+// ── Share / Download ───────────────────────────────────────
+function shareCard() {
+  const ev = EVENTS.find(e=>e.id===state.event);
+  const text = `${ev.event_en} from ${state.name}! ${ev.dua_en}`;
+  if(navigator.share){
+    navigator.share({title:'Islamic Greeting', text, url: window.location.href});
+  } else {
+    navigator.clipboard.writeText(text+'\n\n'+window.location.href).then(()=>showToast('🔗 Link copied!'));
+  }
+}
+
+function copyCard() {
+  const ev = EVENTS.find(e=>e.id===state.event);
+  const txt = `✨ ${ev.event_en} ✨\n${ev.arabic}\n\n${ev.dua_en}\n${ev.dua_ar}\n\nWith love from ${state.name} 🌙`;
+  navigator.clipboard.writeText(txt).then(()=>showToast('📋 Text copied!'));
+}
+
+async function downloadCard() {
+  const card = document.getElementById('greeting-card');
+  const btn = document.getElementById('download-btn');
+
+  if (!card || typeof html2canvas === 'undefined') {
+    showToast('⚠ Download is not ready. Please refresh and try again.');
+    return;
+  }
+
+  const originalText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Preparing HD PNG...';
+
+  // Freeze animations while exporting so the downloaded image matches the card.
+  const animated = card.querySelectorAll('.lantern, .spark, .greeting-card');
+  const previous = [];
+  animated.forEach(el => {
+    previous.push({ el, animation: el.style.animation, transition: el.style.transition });
+    el.style.animation = 'none';
+    el.style.transition = 'none';
+  });
+
+  try {
+    // Make sure Arabic, Urdu and English web fonts are loaded first.
+    if (document.fonts && document.fonts.ready) await document.fonts.ready;
+
+    // 4× export gives a sharp HD image. PNG is lossless, so there is no
+    // JPEG-style compression that changes colours or introduces artifacts.
+    const themeBackgrounds = {
+      gold: 'linear-gradient(160deg, #1A0D00 0%, #2D1A00 40%, #0D1B0D 100%)',
+      emerald: 'linear-gradient(160deg, #011A10 0%, #032E1A 40%, #0A1A2E 100%)',
+      navy: 'linear-gradient(160deg, #05102A 0%, #0D1B3E 40%, #1A0D2E 100%)',
+      rose: 'linear-gradient(160deg, #1A0510 0%, #2E0D1A 40%, #1A0D00 100%)',
+      midnight: 'linear-gradient(160deg, #050520 0%, #0D0D2E 40%, #1A0520 100%)'
+    };
+
+    const canvas = await html2canvas(card, {
+      scale: 4,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: null,
+      logging: false,
+      imageTimeout: 15000,
+      removeContainer: true,
+      // html2canvas can otherwise clone an animated/translucent state and
+      // produce a washed-out white export. Force the export clone to use
+      // the exact visible card colours and full opacity.
+      onclone: (doc) => {
+        const clonedCard = doc.getElementById('greeting-card');
+        if (!clonedCard) return;
+
+        clonedCard.style.opacity = '1';
+        clonedCard.style.transform = 'none';
+        clonedCard.style.filter = 'none';
+        clonedCard.style.animation = 'none';
+        clonedCard.style.transition = 'none';
+        clonedCard.style.background = 'transparent';
+
+        const clonedInner = doc.getElementById('card-inner');
+        if (clonedInner) {
+          clonedInner.style.opacity = '1';
+          clonedInner.style.transform = 'none';
+          clonedInner.style.filter = 'none';
+          clonedInner.style.animation = 'none';
+          clonedInner.style.transition = 'none';
+          clonedInner.style.backgroundImage = themeBackgrounds[state.theme] || themeBackgrounds.gold;
+          clonedInner.style.backgroundColor = '#0D1B3E';
+        }
+
+        // Make every card layer fully opaque where the design expects it,
+        // while keeping intentional decorative opacity such as the mosque.
+        clonedCard.querySelectorAll('.card-center, .card-bismillah, .card-event-name, .card-event-arabic, .card-from, .card-name, .card-dua, .card-footer').forEach(el => {
+          el.style.opacity = '1';
+          el.style.filter = 'none';
+          el.style.animation = 'none';
+          el.style.transition = 'none';
+        });
+
+        clonedCard.querySelectorAll('.lantern, .spark').forEach(el => {
+          el.style.animation = 'none';
+          el.style.transition = 'none';
+        });
+      }
+    });
+
+    const link = document.createElement('a');
+    const safeName = (state.name || 'Greeting')
+      .replace(/[^a-z0-9_-]+/gi, '_')
+      .replace(/^_+|_+$/g, '') || 'Greeting';
+    const ev = EVENTS.find(e => e.id === state.event);
+    const eventName = ev ? ev.en.replace(/[^a-z0-9_-]+/gi, '_') : 'Card';
+
+    link.download = `IslamicGreeting_${eventName}_${safeName}_HD.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+
+    showToast('✓ HD PNG downloaded — lossless quality & colours preserved!');
+  } catch (error) {
+    console.error('Card download failed:', error);
+    showToast('⚠ Could not download the card. Please try again.');
+  } finally {
+    previous.forEach(({el, animation, transition}) => {
+      el.style.animation = animation;
+      el.style.transition = transition;
+    });
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+  }
+}
+
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ── Init ───────────────────────────────────────────────────
+initStars();
+buildEventsGrid();
+buildThemes();
+</script>
+</body>
+</html>
